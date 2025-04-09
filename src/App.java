@@ -1,16 +1,32 @@
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class App {
     public static void main(String[] args) {
         LRUCache<String, String> cache = new LRUCache<>(3);
 
-        cache.putValue("A", "Apple");
-        cache.putValue("B", "Banana");
-        cache.putValue("C", "Cherry");
+        //Create a threadpool to create 5 threads, Each thread can run a task (insert or get from the cache).
+        ExecutorService executor = Executors.newFixedThreadPool(5);
 
-        System.out.println("Initial Cache: " + cache);
 
-        cache.getValue("A"); // Access A
-        cache.putValue("D", "Date"); // Add D, B gets evicted
+        String[] keys = {"A", "B", "C", "D", "E"};
+        String[] values = {"Apple", "Banana", "Cherry", "Date", "Elderberry"};
 
-        System.out.println("After adding 'D': " + cache);
+        for (int i = 0; i < keys.length; i++) {
+            final int index = i;
+            executor.submit(() -> {  //Submits a task to the thread pool
+                cache.putValue(keys[index], values[index]);
+                
+
+                String fetched = cache.getValue(keys[index]);
+                
+
+                // Synchronized printing of cache state
+                
+            });
+            
+        }
+        //Because tasks run in different threads, the order of insertions and retrievals will be non-deterministic
+        executor.shutdown();
     }
 }

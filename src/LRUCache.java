@@ -11,14 +11,33 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
     // original constructor : LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder)
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        return size() > capacity;
+        boolean shouldRemove = size() > capacity;
+
+        if (size() == capacity && !shouldRemove) {
+            System.out.println("Cache is full: " + this);
+            System.out.println("----------------------------");
+        }
+
+        if (shouldRemove) {
+            System.out.println("Evicted: " + eldest.getKey() + "=" + eldest.getValue());
+
+            // Create a copy of the cache minus the eldest entry
+            LinkedHashMap<K, V> preview = new LinkedHashMap<>(this);
+            preview.remove(eldest.getKey());
+
+            System.out.println("New Cache (after eviction): " + preview);
+            System.out.println("----------------------------");
+        }
+
+        return shouldRemove;
     }
 
-    public V getValue(K key) {
+
+    public synchronized V getValue(K key) {
         return super.get(key);
     }
 
-    public void putValue(K key, V value) {
+    public synchronized void putValue(K key, V value) {
         super.put(key, value);
     }
 }
