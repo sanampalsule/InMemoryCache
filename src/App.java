@@ -9,17 +9,30 @@ public class App {
     static AtomicInteger cacheMisses = new AtomicInteger(0);
 
     public static void main(String[] args) {
-        LRUCache<String, String> cache = new LRUCache<>(3);
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        int totalUniqueKeys = 100;
+        int totalRequestsToSimulate = 10_000;
 
-        String[] keys = {"A", "B", "C", "D", "A", "E", "C"};
+        // Step 1: Bigger Cache
+        LRUCache<String, String> cache = new LRUCache<>(100);
+        ExecutorService executor = Executors.newFixedThreadPool(20); // more threads for speed
 
-        for (String key : keys) {
+        // Step 2: Create 100 reusable keys
+        String[] keys = new String[totalUniqueKeys];
+        for (int i = 0; i < totalUniqueKeys; i++) {
+            keys[i] = "key" + i;
+        }
+
+        // Step 3: Start timer before requests
+        long globalStart = System.nanoTime();
+
+        // Step 4: Simulate 10,000 random requests
+        for (int i = 0; i < totalRequestsToSimulate; i++) {
+            final String key = keys[(int) (Math.random() * totalUniqueKeys)];
+
             executor.submit(() -> {
                 long startTime = System.nanoTime();
 
                 String value;
-
                 synchronized (cache) {
                     value = cache.getValue(key);
                 }
@@ -30,27 +43,28 @@ public class App {
                     synchronized (cache) {
                         cache.putValue(key, value);
                     }
-                    System.out.println("Cache MISS → Backend: " + key + " = " + value);
                 } else {
                     cacheHits.incrementAndGet();
-                    System.out.println("Cache HIT → Memory: " + key + " = " + value);
                 }
 
                 totalRequests.incrementAndGet();
 
                 long endTime = System.nanoTime();
-                long durationMs = (endTime - startTime) / 1_000_000;
-                System.out.println("Request: " + key + " | Time: " + durationMs + "ms");
+                long duration = (endTime - startTime) / 1_000_000; // (Optional: time per request)
             });
         }
 
         executor.shutdown();
-
         while (!executor.isTerminated()) {
-            // Wait for all tasks to finish
+            // Wait for all threads to complete
         }
 
-        System.out.println("\n------ Benchmark Report ------");
+        // Step 5: End timer and print report
+        long globalEnd = System.nanoTime();
+        long totalDurationMs = (globalEnd - globalStart) / 1_000_000;
+        double throughput = (totalRequests.get() * 1000.0) / totalDurationMs;
+
+        System.out.println("\n------ Final Benchmark Report ------");
         System.out.println("Total requests: " + totalRequests.get());
         System.out.println("Cache hits: " + cacheHits.get());
         System.out.println("Cache misses: " + cacheMisses.get());
@@ -58,6 +72,8 @@ public class App {
 
         double hitRate = (cacheHits.get() * 100.0) / totalRequests.get();
         System.out.printf("Cache hit rate: %.2f%%\n", hitRate);
-        System.out.printf("Backend load reduction: %.2f%%\n", 100.0 - hitRate);
+        System.out.printf("Backend load rate: %.2f%%\n", 100.0 - hitRate);
+        System.out.printf("Total time taken: %d ms\n", totalDurationMs);
+        System.out.printf("Throughput: %.2f requests/sec\n", throughput);
     }
 }
