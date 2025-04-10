@@ -61,7 +61,7 @@ Throughput:               11,990.41 requests/sec
 
 ---
 
-## 📈 Quantified Resume-Ready Results
+## 📈 Quantified Ready Results
 
 - 🔥 **98.47% cache hit rate** → proves efficient reuse of in-memory data
 - 🧠 **Backend load reduced by 98%** → only ~1.5% requests hit backend
