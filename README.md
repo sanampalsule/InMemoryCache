@@ -63,10 +63,10 @@ Throughput:               11,990.41 requests/sec
 
 ## 📈 Quantified Ready Results
 
-- 🔥 **98.47% cache hit rate** → proves efficient reuse of in-memory data
-- 🧠 **Backend load reduced by 98%** → only ~1.5% requests hit backend
-- 🚀 **11,990 QPS throughput** → exceeds 10K/sec target
-- ⚡️ **<1 second latency** for 10,000 requests
+-  **98.47% cache hit rate** → proves efficient reuse of in-memory data
+-  **Backend load reduced by 98%** → only ~1.5% requests hit backend
+-  **11,990 QPS throughput** → exceeds 10K/sec target
+-  **<1 second latency** for 10,000 requests
 
 ---
 
@@ -79,17 +79,7 @@ Throughput:               11,990.41 requests/sec
 
 ---
 
-## 📌 Future Enhancements
 
-- Add **gRPC interface** to simulate a distributed system
-- Replace `synchronized` with `ReentrantLock` for fine-grained control
-- Add unit tests and JMH benchmarks
-- Integrate cache expiration (TTL)
 
----
-
-## 📄 License
-
-MIT License – feel free to fork and build upon!
 
 
